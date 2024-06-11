@@ -1,0 +1,53 @@
+docker build -t hamzamushtaq840/posts:0.0.1 .
+kubectl apply -f posts.yaml
+kubectl get pods
+kubectl exec -it posts sh  
+kubectl delete pod posts 
+kubectl delete pod posts-depl-6c8f679f56-82tk2
+
+#Pushing image to docker hub
+docker build -t hamzamushtaq840/moderation
+docker push hamzamushtaq840/moderation
+
+#Creating deployment for event bus
+kubectl apply -f posts-depl.yaml 
+kubectl logs posts-depl-98bb9b74d-h5cdx
+kubectl get deployments 
+kubectl delete deployment posts-depl 
+kubectl rollout restart deployment posts-depl
+kubectl get services
+kubectl delete svc event-bus-srv
+kubectl describe service posts-srv
+
+
+//Creating service (query,moderation,comments)
+1.Change url from source code for event bus
+
+2.Pushing image to docker hub
+    docker build -t hamzamushtaq840/moderation
+    docker push hamzamushtaq840/moderation
+
+3.Create deployement and clusterIP service for each one 
+  (deployement is making pods and clusterIP is so that they can communicate with eachother
+  also NodePort was for done with posts so that it can interact with react in localhost-That is service)
+    kubectl apply -f posts-depl.yaml  or
+    kubectl apply -f .
+    kubectl get deployments 
+    kubectl get pods 
+
+  #To check if clusterIP services were created as well from yaml as service provide network between pods
+  also we need a name and post from here to send internal requests
+    kubectl get services  
+
+  #After any changes in source code you need to build docker and push after that restart all deployments so they make pod from latest images
+  kubectl rollout restart deployment
+
+  #For nginx so it routes request to clusterIP of desired service
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
+
+  #Skaffold command 
+  skaffold dev
+  
+4.For creating a secret 
+    kubectl create secret generic jwt-secret --from-literal=JWT_KEY=asdf  
+    kubectl get secrets
