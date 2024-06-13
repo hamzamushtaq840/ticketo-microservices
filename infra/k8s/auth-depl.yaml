@@ -13,7 +13,7 @@ spec:
         app: auth
     spec:
       containers:
-        - name: posts
+        - name: auth
           image: hamzamushtaq840/auth
           env:
             - name: JWT_KEY
@@ -27,7 +27,6 @@ kind: Service
 metadata:
   name: auth-srv
 spec:
-  type: ClusterIP
   selector:
     app: auth
   ports:

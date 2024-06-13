@@ -20,7 +20,7 @@ app.use(
   cookieSession({
     //prevents encryption as jwt is already encrypted
     signed: false,
-    secure: true,
+    secure: false,
   })
 );
 

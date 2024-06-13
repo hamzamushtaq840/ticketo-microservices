@@ -1,3 +1,4 @@
+// Server-side code for signin route
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import jwt from "jsonwebtoken";
@@ -44,7 +45,7 @@ router.post(
       process.env.JWT_KEY!
     );
 
-    // Store it on session object from "cookie-session" which is a middleware
+    // Store it on session object from "cookie-session" middleware
     req.session = {
       jwt: userJwt,
     };
