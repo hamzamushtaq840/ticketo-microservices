@@ -1,5 +1,5 @@
 import axios from "axios";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function checkLogin() {
@@ -18,7 +18,6 @@ export async function checkLogin() {
         },
       }
     );
-    console.log(data.data);
     return data.data;
   } catch (error) {
     console.log(error);

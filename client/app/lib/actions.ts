@@ -3,42 +3,37 @@ import axios, { AxiosError } from "axios";
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 
+interface ErrorResponse {
+  errors: { message: string }[];
+}
+
 export async function authenticate(
-  prevState: string | undefined,
+  prevState: ErrorResponse | undefined,
   formData: FormData
 ) {
+  const rawFormData = {
+    email: formData.get("email") as string | null,
+    password: formData.get("password") as string | null,
+  };
+
   try {
-    let response = await axios.post(
+    const response = await axios.post(
       `http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/signin`,
-      {
-        email: formData.get("email") as string | null,
-        password: formData.get("password") as string | null,
-      },
+      rawFormData,
       {
         headers: {
           "Content-Type": "application/json",
-          //so that ingrix knows which domain you wanna use
-          Host: "posts.com",
+          Host: "posts.com", // so that ingress knows which domain you want to use
         },
       }
     );
-    //do
     const setCookieHeader = response.headers["set-cookie"];
-    if (setCookieHeader) {
-      // Set the cookie in the server-side response
-      const nextResponse = NextResponse.next();
-      nextResponse.headers.append("Set-Cookie", setCookieHeader.join("; "));
-      return nextResponse;
-    }
 
-    redirect("/dashboard");
+    console.log(setCookieHeader);
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      return error.response?.data;
-    } else {
-      throw error;
-    }
+    return (error as AxiosError<ErrorResponse>).response?.data;
   }
+  redirect("/dashboard");
 }
 
 export async function register(

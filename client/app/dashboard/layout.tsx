@@ -6,7 +6,7 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  await checkLogin();
+  // await checkLogin();
 
   return (
     <div className="flex h-screen flex-col">
