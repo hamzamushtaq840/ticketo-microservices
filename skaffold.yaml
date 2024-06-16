@@ -27,3 +27,11 @@ build:
             dest: .
           - src: "**/*.ts"
             dest: .
+    - image: hamzamushtaq840/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .

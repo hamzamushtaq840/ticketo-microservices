@@ -1,5 +1,6 @@
 "use server";
 import axios, { AxiosError } from "axios";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 
@@ -16,6 +17,7 @@ export async function authenticate(
     password: formData.get("password") as string | null,
   };
 
+  console.log("before middleware");
   try {
     const response = await axios.post(
       `http://ingress-nginx-controller.ingress-nginx.svc.cluster.local/api/users/signin`,
@@ -28,8 +30,15 @@ export async function authenticate(
       }
     );
     const setCookieHeader = response.headers["set-cookie"];
-
-    console.log(setCookieHeader);
+    if (setCookieHeader) {
+      setCookieHeader.forEach((cookie) => {
+        const [cookieName, ...cookieAttributes] = cookie.split("=");
+        cookies().set(cookieName, cookieAttributes.join("="), {
+          httpOnly: false,
+        });
+      });
+    }
+    console.log("i set the cookies");
   } catch (error) {
     return (error as AxiosError<ErrorResponse>).response?.data;
   }

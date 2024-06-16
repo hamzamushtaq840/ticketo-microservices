@@ -1,6 +1,6 @@
 // Server-side code for current user route
 import express from "express";
-import { currentUser } from "../middlewares/current-user";
+import { currentUser } from "@sgtickets/common";
 
 const router = express.Router();
 
