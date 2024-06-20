@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+spec:
+  serviceName: "kafka"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+        - name: kafka
+          image: bitnami/kafka:latest
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+          env:
+            - name: KAFKA_CFG_NODE_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: KAFKA_CFG_PROCESS_ROLES
+              value: "controller,broker"
+            - name: KAFKA_CFG_LISTENERS
+              value: "PLAINTEXT://:9092,CONTROLLER://:9093"
+            - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+              value: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+            - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
+              value: "0@kafka-0.kafka:9093"
+            - name: KAFKA_CFG_CONTROLLER_LISTENER_NAMES
+              value: "CONTROLLER"
+          volumeMounts:
+            - name: kafka-data
+              mountPath: /bitnami/kafka
+  volumeClaimTemplates:
+    - metadata:
+        name: kafka-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-srv
+spec:
+  type: NodePort
+  selector:
+    app: kafka
+  ports:
+    - name: plaintext
+      port: 9092
+      targetPort: 9092
+      nodePort: 31092
+    - name: controller
+      port: 9093
+      targetPort: 9093
+      nodePort: 31093

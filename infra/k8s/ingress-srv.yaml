@@ -25,6 +25,13 @@ spec:
                 name: tickets-srv
                 port:
                   number: 3000
+          - path: /kafka/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: kafka-srv
+                port:
+                  number: 9092
           - path: /?(.*)
             pathType: Prefix
             backend:
