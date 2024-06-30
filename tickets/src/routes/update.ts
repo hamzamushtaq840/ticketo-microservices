@@ -43,7 +43,7 @@ router.put(
       title: ticket.title,
       price: ticket.price,
       userId: ticket.userId,
-      version: 1,
+      version: ticket.version,
     });
 
     res.send(ticket);
