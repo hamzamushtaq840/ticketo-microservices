@@ -50,4 +50,5 @@ kubectl describe service posts-srv
   
 4.For creating a secret 
     kubectl create secret generic jwt-secret --from-literal=JWT_KEY=asdf  
+    kubectl create secret generic jwt-secret --from-literal=STRIPE_KEY=asdf  
     kubectl get secrets
